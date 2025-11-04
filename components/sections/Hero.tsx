@@ -27,7 +27,7 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
           className="mb-8"
         >
-          <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none tracking-tight">
             <span className="text-white">We can</span>{' '}
             <span className="text-white">do</span>{' '}
             <span 
