@@ -178,7 +178,7 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
           key={i}
           position={[point.position[0], point.position[1], point.position[2]]}
         >
-          <sphereGeometry args={[0.08, 6, 6]} />
+          <sphereGeometry args={[0.05, 6, 6]} />
           <meshBasicMaterial
             color={`rgb(${Math.floor(point.color[0] * 255)}, ${Math.floor(point.color[1] * 255)}, ${Math.floor(point.color[2] * 255)})`}
             transparent={false}
