@@ -9,10 +9,10 @@ import * as THREE from 'three';
 const colorPalettes = {
   // Option 1: Dark gray with orange accents (visible, professional)
   grayOrange: [
-    [1.0, 1.0, 1.0],    // WHITE (100%) - ALL points white for maximum visibility
-    [1.0, 1.0, 1.0],    // WHITE
-    [1.0, 1.0, 1.0],    // WHITE
-    [1.0, 0.53, 0.0],   // Bright orange (for testing)
+    [0.5, 0.5, 0.5],    // Light gray (70%) - clearly visible
+    [0.7, 0.7, 0.7],    // Bright gray (25%) - very visible
+    [1.0, 0.53, 0.0],   // Bright orange (4%) - brand accent
+    [1.0, 0.7, 0.3],    // Light orange (1%) - highlight
   ],
   
   // Option 2: Blue-gray with orange accents (tech, modern)
@@ -76,15 +76,25 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       const colorPalette = colorPalettes[variant];
       
       for (let i = 0; i < numPoints; i++) {
-        // Points closer to camera in a smaller area for maximum visibility
-        const x = (Math.random() - 0.5) * 20;
-        const y = (Math.random() - 0.5) * 20;
-        const z = (Math.random() - 0.5) * 10; // Very close to camera
+        // Spread points in 3D space for depth effect
+        const x = (Math.random() - 0.5) * 40;
+        const y = (Math.random() - 0.5) * 40;
+        const z = (Math.random() - 0.5) * 30; // Spread in Z for depth
         
         positionsArray.set([x, y, z], i * 3);
         
-      // ALL points WHITE for maximum visibility test
-      const color = colorPalette[0]; // 100% WHITE
+      // Assign colors based on probability - gray and orange
+      const rand = Math.random();
+      let color;
+      if (rand < 0.70) {
+        color = colorPalette[0]; // 70% base color - light gray
+      } else if (rand < 0.95) {
+        color = colorPalette[1]; // 25% secondary color - bright gray
+      } else if (rand < 0.99) {
+        color = colorPalette[2]; // 4% accent color - bright orange
+      } else {
+        color = colorPalette[3]; // 1% highlight color - light orange
+      }
         
         colorsArray.set(color, i * 3);
       }
@@ -140,10 +150,10 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     console.error('[TechGridBackground] Rendering error display:', error);
   }
 
-  // Create mesh instances for each point - render as spheres
+  // Create mesh instances for each point - render as small spheres
   const pointMeshes = useMemo(() => {
     const meshes = [];
-    const numPoints = Math.min(positions.length / 3, 300); // Limit to 300 for performance
+    const numPoints = Math.min(positions.length / 3, 2000); // 2000 points for good visibility
     for (let i = 0; i < numPoints; i++) {
       const x = positions[i * 3];
       const y = positions[i * 3 + 1];
@@ -165,15 +175,15 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
           <meshBasicMaterial color="red" />
         </mesh>
       )}
-      {/* Render points as WHITE spheres for maximum visibility */}
+      {/* Render points as small colored spheres */}
       {pointMeshes.map((point, i) => (
         <mesh
           key={i}
           position={[point.position[0], point.position[1], point.position[2]]}
         >
-          <sphereGeometry args={[0.2, 8, 8]} />
+          <sphereGeometry args={[0.08, 6, 6]} />
           <meshBasicMaterial
-            color="#FFFFFF"
+            color={`rgb(${Math.floor(point.color[0] * 255)}, ${Math.floor(point.color[1] * 255)}, ${Math.floor(point.color[2] * 255)})`}
             transparent={false}
           />
         </mesh>
@@ -284,7 +294,7 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
           <Canvas
-            camera={{ position: [0, 0, 10], fov: 75 }}
+            camera={{ position: [0, 0, 20], fov: 60 }}
             style={{ background: 'transparent' }}
             gl={{ 
               alpha: true, 
