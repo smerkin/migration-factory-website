@@ -37,7 +37,7 @@ const MatrixCodeBackground = dynamic(
 );
 
 export default function Home() {
-  const [animationType, setAnimationType] = useState<'techGrid' | 'networkGraph' | 'dataStreams' | 'circuitBoard' | 'matrixCode'>('networkGraph');
+  const [animationType, setAnimationType] = useState<'techGrid' | 'networkGraph' | 'dataStreams' | 'circuitBoard' | 'matrixCode'>('techGrid');
   const [backgroundVariant, setBackgroundVariant] = useState<'grayOrange' | 'blueOrange' | 'warmOrange' | 'monochrome' | 'purpleOrange'>('grayOrange');
 
   const renderBackground = () => {

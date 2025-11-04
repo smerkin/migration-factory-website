@@ -108,15 +108,15 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     }
   }, [variant]);
 
-  // Animate rotation only - no movement to avoid motion sickness
+  // Animate rotation only - slow speed to avoid motion sickness
   useFrame((state) => {
     try {
       if (ref.current) {
         const time = state.clock.getElapsedTime();
-        // Rotate the entire group only - no position changes
-        ref.current.rotation.x = time * 0.05;
-        ref.current.rotation.y = time * 0.075;
-        ref.current.rotation.z = time * 0.02;
+        // Rotate the entire group only - very slow speed
+        ref.current.rotation.x = time * 0.02;
+        ref.current.rotation.y = time * 0.03;
+        ref.current.rotation.z = time * 0.01;
         
         // No floating movement - fixed position
         ref.current.position.y = 0;
