@@ -10,10 +10,10 @@ import * as THREE from 'three';
 const colorPalettes = {
   // Option 1: Dark gray with orange accents (visible, professional)
   grayOrange: [
-    [1.0, 1.0, 1.0],    // WHITE (50%) - highly visible
-    [0.8, 0.8, 0.8],    // Light gray (30%) - very visible
-    [1.0, 0.53, 0.0],   // Bright orange (15%) - brand accent
-    [1.0, 0.7, 0.3],    // Light orange (5%) - highlight
+    [1.0, 1.0, 1.0],    // WHITE (100%) - ALL points white for maximum visibility
+    [1.0, 1.0, 1.0],    // WHITE
+    [1.0, 1.0, 1.0],    // WHITE
+    [1.0, 0.53, 0.0],   // Bright orange (for testing)
   ],
   
   // Option 2: Blue-gray with orange accents (tech, modern)
@@ -77,25 +77,15 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       const colorPalette = colorPalettes[variant];
       
       for (let i = 0; i < numPoints; i++) {
-        // Spread points in 3D space - closer to camera
-        const x = (Math.random() - 0.5) * 40;
-        const y = (Math.random() - 0.5) * 40;
-        const z = (Math.random() - 0.5) * 30; // Spread in Z for depth
+        // Points closer to camera in a smaller area for maximum visibility
+        const x = (Math.random() - 0.5) * 20;
+        const y = (Math.random() - 0.5) * 20;
+        const z = (Math.random() - 0.5) * 10; // Very close to camera
         
         positionsArray.set([x, y, z], i * 3);
         
-      // Assign colors based on probability - WHITE and orange for maximum visibility
-      const rand = Math.random();
-      let color;
-      if (rand < 0.50) {
-        color = colorPalette[0]; // 50% base color - WHITE
-      } else if (rand < 0.80) {
-        color = colorPalette[1]; // 30% secondary color - light gray
-      } else if (rand < 0.95) {
-        color = colorPalette[2]; // 15% accent color - bright orange
-      } else {
-        color = colorPalette[3]; // 5% highlight color - light orange
-      }
+      // ALL points WHITE for maximum visibility test
+      const color = colorPalette[0]; // 100% WHITE
         
         colorsArray.set(color, i * 3);
       }
@@ -170,11 +160,11 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
         <PointMaterial
           transparent={false}
           vertexColors={true}
-          size={2.0}
-          sizeAttenuation={true}
+          size={3.0}
+          sizeAttenuation={false}
           depthWrite={false}
           opacity={1.0}
-          blending={THREE.NormalBlending}
+          blending={THREE.AdditiveBlending}
         />
       </Points>
     </>
@@ -283,7 +273,7 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
           <Canvas
-            camera={{ position: [0, 0, 20], fov: 60 }}
+            camera={{ position: [0, 0, 10], fov: 75 }}
             style={{ background: 'transparent' }}
             gl={{ 
               alpha: true, 
