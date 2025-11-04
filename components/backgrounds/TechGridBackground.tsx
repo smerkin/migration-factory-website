@@ -3,16 +3,17 @@
 
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Color palette variants
 const colorPalettes = {
   // Option 1: Dark gray with orange accents (visible, professional)
   grayOrange: [
-    [0.5, 0.5, 0.5],    // Light gray (70%) - clearly visible
-    [0.7, 0.7, 0.7],    // Bright gray (25%) - very visible
+    [0.3, 0.3, 0.3],    // Medium gray (85%) - visible but subtle
+    [0.5, 0.5, 0.5],    // Light gray (10%) - more visible
     [1.0, 0.53, 0.0],   // Bright orange (4%) - brand accent
-    [1.0, 0.7, 0.3],    // Light orange (1%) - highlight
+    [0.85, 0.45, 0.0],  // Dark orange (1%) - deeper accent
   ],
   
   // Option 2: Blue-gray with orange accents (tech, modern)
@@ -49,7 +50,7 @@ const colorPalettes = {
 };
 
 function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
-  const ref = useRef<THREE.Group>(null);
+  const ref = useRef<THREE.Points>(null);
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
@@ -69,37 +70,36 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     // Generate grid of points with colors - more points for visibility
     const { positions, colors } = useMemo(() => {
       try {
-      const numPoints = 3000; // Increased from 2000
+      const numPoints = 2000;
       const positionsArray = new Float32Array(numPoints * 3);
       const colorsArray = new Float32Array(numPoints * 3);
       
       const colorPalette = colorPalettes[variant];
       
       for (let i = 0; i < numPoints; i++) {
-        // Spread points in 3D space for depth effect
-        const x = (Math.random() - 0.5) * 40;
-        const y = (Math.random() - 0.5) * 40;
-        const z = (Math.random() - 0.5) * 30; // Spread in Z for depth
+        const x = (Math.random() - 0.5) * 50;
+        const y = (Math.random() - 0.5) * 50;
+        const z = (Math.random() - 0.5) * 50;
         
         positionsArray.set([x, y, z], i * 3);
         
-      // Assign colors based on probability - gray and orange
+      // Assign colors based on probability
       const rand = Math.random();
       let color;
-      if (rand < 0.70) {
-        color = colorPalette[0]; // 70% base color - light gray
+      if (rand < 0.85) {
+        color = colorPalette[0]; // 85% base color
       } else if (rand < 0.95) {
-        color = colorPalette[1]; // 25% secondary color - bright gray
+        color = colorPalette[1]; // 10% secondary color
       } else if (rand < 0.99) {
-        color = colorPalette[2]; // 4% accent color - bright orange
+        color = colorPalette[2]; // 4% accent color
       } else {
-        color = colorPalette[3]; // 1% highlight color - light orange
+        color = colorPalette[3]; // 1% highlight color
       }
         
         colorsArray.set(color, i * 3);
       }
       
-      console.log('[TechGridBackground] Generated', positionsArray.length / 3, 'points with colors. Points should be visible now!');
+      console.log('[TechGridBackground] Generated', positionsArray.length / 3, 'points with colors');
       return { positions: positionsArray, colors: colorsArray };
     } catch (err: any) {
       console.error('[TechGridBackground] Error generating points:', err);
@@ -108,20 +108,19 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     }
   }, [variant]);
 
-  // Animate rotation only - slow speed to avoid motion sickness
+  // Animate rotation and movement
   useFrame((state) => {
     try {
       if (ref.current) {
         const time = state.clock.getElapsedTime();
-        // Rotate the entire group only - very slow speed
-        ref.current.rotation.x = time * 0.02;
-        ref.current.rotation.y = time * 0.03;
-        ref.current.rotation.z = time * 0.01;
+        // Smooth rotation
+        ref.current.rotation.x = time * 0.05;
+        ref.current.rotation.y = time * 0.075;
+        ref.current.rotation.z = time * 0.02;
         
-        // No floating movement - fixed position
-        ref.current.position.y = 0;
-        ref.current.position.x = 0;
-        ref.current.position.z = 0;
+        // Subtle floating movement
+        ref.current.position.y = Math.sin(time * 0.3) * 2;
+        ref.current.position.x = Math.cos(time * 0.2) * 1.5;
       }
     } catch (err: any) {
       console.error('[TechGridBackground] Animation error:', err);
@@ -147,45 +146,26 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     console.error('[TechGridBackground] Rendering error display:', error);
   }
 
-  // Create mesh instances for each point - render as small spheres
-  const pointMeshes = useMemo(() => {
-    const meshes = [];
-    const numPoints = Math.min(positions.length / 3, 2000); // 2000 points for good visibility
-    for (let i = 0; i < numPoints; i++) {
-      const x = positions[i * 3];
-      const y = positions[i * 3 + 1];
-      const z = positions[i * 3 + 2];
-      const r = colors[i * 3];
-      const g = colors[i * 3 + 1];
-      const b = colors[i * 3 + 2];
-      meshes.push({ position: [x, y, z], color: [r, g, b] });
-    }
-    console.log('[TechGridBackground] Created', meshes.length, 'point meshes');
-    return meshes;
-  }, [positions, colors]);
-
   return (
-    <group ref={ref}>
+    <>
       {error && (
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshBasicMaterial color="red" />
         </mesh>
       )}
-      {/* Render points as small colored spheres */}
-      {pointMeshes.map((point, i) => (
-        <mesh
-          key={i}
-          position={[point.position[0], point.position[1], point.position[2]]}
-        >
-          <sphereGeometry args={[0.05, 6, 6]} />
-          <meshBasicMaterial
-            color={`rgb(${Math.floor(point.color[0] * 255)}, ${Math.floor(point.color[1] * 255)}, ${Math.floor(point.color[2] * 255)})`}
-            transparent={false}
-          />
-        </mesh>
-      ))}
-    </group>
+      <Points ref={ref} geometry={geometry} frustumCulled={false}>
+        <PointMaterial
+          transparent
+          vertexColors={true}
+          size={0.18}
+          sizeAttenuation={true}
+          depthWrite={false}
+          opacity={0.7}
+          blending={THREE.AdditiveBlending}
+        />
+      </Points>
+    </>
   );
 }
 
@@ -214,15 +194,10 @@ function Connections({ variant = 'grayOrange' }: { variant?: keyof typeof colorP
   }, []);
 
   useFrame((state) => {
-    try {
-      if (linesRef.current) {
-        const time = state.clock.getElapsedTime();
-        linesRef.current.rotation.y = time * 0.05;
-        linesRef.current.rotation.x = Math.sin(time * 0.2) * 0.2;
-        linesRef.current.rotation.z = Math.cos(time * 0.15) * 0.1;
-      }
-    } catch (err: any) {
-      console.error('[TechGridBackground] Connections animation error:', err);
+    if (linesRef.current) {
+      const time = state.clock.getElapsedTime();
+      linesRef.current.rotation.y = time * 0.03;
+      linesRef.current.rotation.x = Math.sin(time * 0.1) * 0.1;
     }
   });
 
@@ -291,7 +266,7 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
           <Canvas
-            camera={{ position: [0, 0, 20], fov: 60 }}
+            camera={{ position: [0, 0, 25], fov: 75 }}
             style={{ background: 'transparent' }}
             gl={{ 
               alpha: true, 
@@ -307,8 +282,7 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
           setCanvasError(error.message || 'Unknown Canvas error');
         }}
       >
-            <ambientLight intensity={1.0} />
-            <pointLight position={[10, 10, 10]} intensity={0.5} />
+            <ambientLight intensity={0.6} />
         <DataNodes variant={variant} />
         <Connections variant={variant} />
       </Canvas>
