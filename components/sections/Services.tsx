@@ -150,11 +150,11 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
                 whileHover={{ scale: 1.1 }}
-                className="px-3 py-1.5 text-xs font-medium rounded-full bg-graphite-800/50 text-graphite-300 border border-graphite-700/50 hover:border-opacity-100 transition-all duration-200"
-                style={{ 
-                  borderColor: idx === 0 || idx === service.process.length - 1 ? 'var(--primary)' : undefined,
-                  borderOpacity: idx === 0 || idx === service.process.length - 1 ? '0.5' : undefined
-                }}
+                className={`px-3 py-1.5 text-xs font-medium rounded-full bg-graphite-800/50 text-graphite-300 border transition-all duration-200 ${
+                  idx === 0 || idx === service.process.length - 1 
+                    ? 'border-[var(--primary)] border-opacity-50' 
+                    : 'border-graphite-700/50 hover:border-opacity-100'
+                }`}
               >
                 {step}
               </motion.span>
