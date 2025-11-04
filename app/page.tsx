@@ -20,7 +20,7 @@ export default function Home() {
     <main className="relative min-h-screen">
       {/* Animated Background */}
       <Suspense fallback={null}>
-        <TechGridBackground variant="grayOrange" />
+        <TechGridBackground />
       </Suspense>
 
       {/* Header */}
