@@ -38,30 +38,29 @@ function NetworkNodes() {
             <sphereGeometry args={[0.06, 8, 8]} />
             <meshBasicMaterial color="#FF8A00" />
           </mesh>
-          {/* Connection lines */}
-          {nodes.slice(i + 1, i + node.connections + 1).map((target, j) => {
-            const distance = Math.sqrt(
-              Math.pow(node.position[0] - target.position[0], 2) +
-              Math.pow(node.position[1] - target.position[1], 2) +
-              Math.pow(node.position[2] - target.position[2], 2)
-            );
-            if (distance < 8) {
-              return (
-                <line key={j}>
-                  <bufferGeometry>
-                    <bufferAttribute
-                      attach="attributes-position"
-                      count={2}
-                      array={new Float32Array([
-                        ...node.position,
-                        ...target.position,
-                      ])}
-                      itemSize={3}
-                    />
-                  </bufferGeometry>
-                  <lineBasicMaterial color="#FF8A00" opacity={0.2} transparent />
-                </line>
+          {/* Connection lines - simplified */}
+          {Array.from({ length: Math.min(node.connections, 3) }).map((_, j) => {
+            const targetIdx = (i + j + 1) % nodes.length;
+            const target = nodes[targetIdx];
+            if (target) {
+              const distance = Math.sqrt(
+                Math.pow(node.position[0] - target.position[0], 2) +
+                Math.pow(node.position[1] - target.position[1], 2) +
+                Math.pow(node.position[2] - target.position[2], 2)
               );
+              if (distance < 8) {
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array([
+                  ...node.position,
+                  ...target.position,
+                ]);
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                return (
+                  <line key={j} geometry={geometry}>
+                    <lineBasicMaterial color="#FF8A00" opacity={0.2} transparent />
+                  </line>
+                );
+              }
             }
             return null;
           })}

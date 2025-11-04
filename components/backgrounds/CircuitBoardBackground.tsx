@@ -58,22 +58,19 @@ function CircuitBoard() {
         </mesh>
       ))}
       {/* Connections */}
-      {connections.map((conn, i) => (
-        <line key={i}>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={2}
-              array={new Float32Array([
-                ...conn[0],
-                ...conn[1],
-              ])}
-              itemSize={3}
-            />
-          </bufferGeometry>
-          <lineBasicMaterial color="#666666" opacity={0.3} transparent />
-        </line>
-      ))}
+      {connections.map((conn, i) => {
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array([
+          ...conn[0],
+          ...conn[1],
+        ]);
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        return (
+          <line key={i} geometry={geometry}>
+            <lineBasicMaterial color="#666666" opacity={0.3} transparent />
+          </line>
+        );
+      })}
     </group>
   );
 }

@@ -1,7 +1,7 @@
 /// <reference types="@react-three/fiber" />
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -12,11 +12,9 @@ function DataStream() {
     const particles = [];
     for (let i = 0; i < 200; i++) {
       particles.push({
-        position: [
-          (Math.random() - 0.5) * 50,
-          (Math.random() - 0.5) * 50,
-          (Math.random() - 0.5) * 30
-        ],
+        initialY: (Math.random() - 0.5) * 50,
+        x: (Math.random() - 0.5) * 50,
+        z: (Math.random() - 0.5) * 30,
         speed: Math.random() * 0.5 + 0.2,
         color: Math.random() > 0.9 ? '#FF8A00' : '#666666',
       });
@@ -24,22 +22,26 @@ function DataStream() {
     return particles;
   }, []);
 
+  const particleRefs = useRef<(THREE.Mesh | null)[]>([]);
+
   useFrame((state) => {
-    if (streamRef.current) {
-      const time = state.clock.getElapsedTime();
-      streamRef.current.children.forEach((child, i) => {
-        if (child instanceof THREE.Mesh) {
-          child.position.y = (particles[i].position[1] + time * particles[i].speed * 10) % 50 - 25;
-          child.position.z = Math.sin(time * 0.5 + i) * 5;
-        }
-      });
-    }
+    const time = state.clock.getElapsedTime();
+    particleRefs.current.forEach((ref, i) => {
+      if (ref && particles[i]) {
+        ref.position.y = (particles[i].initialY + time * particles[i].speed * 10) % 50 - 25;
+        ref.position.z = particles[i].z + Math.sin(time * 0.5 + i) * 5;
+      }
+    });
   });
 
   return (
     <group ref={streamRef}>
       {particles.map((particle, i) => (
-        <mesh key={i} position={particle.position as [number, number, number]}>
+        <mesh 
+          key={i} 
+          ref={(el) => { particleRefs.current[i] = el; }}
+          position={[particle.x, particle.initialY, particle.z]}
+        >
           <sphereGeometry args={[0.04, 6, 6]} />
           <meshBasicMaterial color={particle.color} />
         </mesh>
