@@ -9,9 +9,18 @@ import * as THREE from 'three';
 function DataNodes() {
   const ref = useRef<THREE.Points>(null);
   
-  // Generate grid of points
-  const particlesPosition = useMemo(() => {
+  // Generate grid of points with colors
+  const { positions, colors } = useMemo(() => {
     const positions = new Float32Array(2000 * 3);
+    const colors = new Float32Array(2000 * 3);
+    
+    // Color palette: dark gray, medium gray, orange accent
+    const colorPalette = [
+      [0.15, 0.15, 0.15],  // Dark gray (90%)
+      [0.25, 0.25, 0.25],  // Medium gray (7%)
+      [1.0, 0.53, 0.0],    // Orange accent (3%) - primary color
+      [0.85, 0.45, 0.0],   // Darker orange (rare)
+    ];
     
     for (let i = 0; i < 2000; i++) {
       const x = (Math.random() - 0.5) * 50;
@@ -19,9 +28,24 @@ function DataNodes() {
       const z = (Math.random() - 0.5) * 50;
       
       positions.set([x, y, z], i * 3);
+      
+      // Assign colors based on probability
+      const rand = Math.random();
+      let color;
+      if (rand < 0.9) {
+        color = colorPalette[0]; // 90% dark gray
+      } else if (rand < 0.97) {
+        color = colorPalette[1]; // 7% medium gray
+      } else if (rand < 0.99) {
+        color = colorPalette[2]; // 2% orange accent
+      } else {
+        color = colorPalette[3]; // 1% darker orange
+      }
+      
+      colors.set(color, i * 3);
     }
     
-    return positions;
+    return { positions, colors };
   }, []);
 
   // Animate rotation
@@ -32,15 +56,23 @@ function DataNodes() {
     }
   });
 
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    return geo;
+  }, [positions, colors]);
+
   return (
-    <Points ref={ref} positions={particlesPosition} stride={3} frustumCulled={false}>
+    <Points ref={ref} geometry={geometry} frustumCulled={false}>
       <PointMaterial
         transparent
-        color="var(--primary)"
-        size={0.15}
+        vertexColors={true}
+        size={0.12}
         sizeAttenuation={true}
         depthWrite={false}
-        opacity={0.8}
+        opacity={0.5}
+        blending={THREE.AdditiveBlending}
       />
     </Points>
   );
@@ -79,9 +111,9 @@ function Connections() {
   return (
     <lineSegments ref={linesRef} geometry={geometry}>
       <lineBasicMaterial
-        color="var(--primary)"
+        color="#FF8A00"
         transparent
-        opacity={0.15}
+        opacity={0.08}
         blending={THREE.AdditiveBlending}
       />
     </lineSegments>
