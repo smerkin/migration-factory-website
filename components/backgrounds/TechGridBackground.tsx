@@ -77,10 +77,10 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       const colorPalette = colorPalettes[variant];
       
       for (let i = 0; i < numPoints; i++) {
-        // Closer to camera for better visibility - smaller range
-        const x = (Math.random() - 0.5) * 30;
-        const y = (Math.random() - 0.5) * 30;
-        const z = (Math.random() - 0.5) * 20; // Closer to camera
+        // Spread points in 3D space - closer to camera
+        const x = (Math.random() - 0.5) * 40;
+        const y = (Math.random() - 0.5) * 40;
+        const z = (Math.random() - 0.5) * 30; // Spread in Z for depth
         
         positionsArray.set([x, y, z], i * 3);
         
@@ -167,15 +167,15 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
         </mesh>
       )}
       <Points ref={ref} geometry={geometry} frustumCulled={false}>
-      <PointMaterial
-        transparent={false}
-        vertexColors={true}
-        size={1.0}
-        sizeAttenuation={false}
-        depthWrite={true}
-        opacity={1.0}
-        blending={THREE.NormalBlending}
-      />
+        <PointMaterial
+          transparent={false}
+          vertexColors={true}
+          size={2.0}
+          sizeAttenuation={true}
+          depthWrite={false}
+          opacity={1.0}
+          blending={THREE.NormalBlending}
+        />
       </Points>
     </>
   );
@@ -283,7 +283,7 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
           <Canvas
-            camera={{ position: [0, 0, 15], fov: 75 }}
+            camera={{ position: [0, 0, 20], fov: 60 }}
             style={{ background: 'transparent' }}
             gl={{ 
               alpha: true, 
@@ -301,11 +301,6 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
       >
             <ambientLight intensity={1.0} />
             <pointLight position={[10, 10, 10]} intensity={0.5} />
-        {/* Test sphere to verify Canvas is rendering */}
-        <mesh position={[0, 0, 0]}>
-          <sphereGeometry args={[1, 16, 16]} />
-          <meshStandardMaterial color="#FF8A00" emissive="#FF8A00" emissiveIntensity={0.5} />
-        </mesh>
         <DataNodes variant={variant} />
         <Connections variant={variant} />
       </Canvas>
