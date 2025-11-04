@@ -25,6 +25,7 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+          viewport={{ once: true }}
           className="mb-8"
         >
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none tracking-tight">
@@ -46,6 +47,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+          viewport={{ once: true }}
           className="mb-8"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl text-balance leading-tight font-semibold text-graphite-300">
@@ -63,6 +65,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+          viewport={{ once: true }}
         >
           We are a boutique team specializing only in data migration. We help consulting firms and mid-market companies deliver ERP and M&A programmes on time and within budget.
         </motion.p>
@@ -73,6 +76,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+          viewport={{ once: true }}
         >
           {features.map((feature, index) => {
             const Icon = feature.icon;
@@ -82,6 +86,7 @@ export default function Hero() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
+                viewport={{ once: true }}
                 className="flex items-start gap-3 p-4 rounded-xl bg-graphite-900/30 border border-graphite-800/50 backdrop-blur-sm hover:border-opacity-100 transition-all duration-300 group"
               >
                 <div className="flex-shrink-0 p-2 rounded-lg bg-graphite-800/50 group-hover:scale-110 transition-transform duration-300">
@@ -98,6 +103,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+          viewport={{ once: true }}
         >
           <button
             onClick={scrollToContact}
@@ -124,6 +130,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
+          viewport={{ once: true }}
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4" style={{ color: 'var(--primary)' }} />

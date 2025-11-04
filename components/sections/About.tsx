@@ -7,7 +7,7 @@ import { Users, Target, Award, TrendingUp, Zap, Shield } from 'lucide-react';
 
 export default function About() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: true, margin: '-50px', amount: 0.2 });
 
   const values = [
     {

@@ -7,7 +7,7 @@ import { Mail, User, MessageSquare, CheckCircle2 } from 'lucide-react';
 
 export default function Contact() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: true, margin: '-50px', amount: 0.2 });
   const [formData, setFormData] = useState({
     name: '',
     company: '',
