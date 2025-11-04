@@ -70,36 +70,36 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
   // Generate grid of points with colors
   const { positions, colors } = useMemo(() => {
     try {
-    const positions = new Float32Array(2000 * 3);
-    const colors = new Float32Array(2000 * 3);
-    
-    const colorPalette = colorPalettes[variant];
-    
-    for (let i = 0; i < 2000; i++) {
-      const x = (Math.random() - 0.5) * 50;
-      const y = (Math.random() - 0.5) * 50;
-      const z = (Math.random() - 0.5) * 50;
+      const positionsArray = new Float32Array(2000 * 3);
+      const colorsArray = new Float32Array(2000 * 3);
       
-      positions.set([x, y, z], i * 3);
+      const colorPalette = colorPalettes[variant];
       
-      // Assign colors based on probability
-      const rand = Math.random();
-      let color;
-      if (rand < 0.85) {
-        color = colorPalette[0]; // 85% base color
-      } else if (rand < 0.95) {
-        color = colorPalette[1]; // 10% secondary color
-      } else if (rand < 0.99) {
-        color = colorPalette[2]; // 4% accent color
-      } else {
-        color = colorPalette[3]; // 1% highlight color
+      for (let i = 0; i < 2000; i++) {
+        const x = (Math.random() - 0.5) * 50;
+        const y = (Math.random() - 0.5) * 50;
+        const z = (Math.random() - 0.5) * 50;
+        
+        positionsArray.set([x, y, z], i * 3);
+        
+        // Assign colors based on probability
+        const rand = Math.random();
+        let color;
+        if (rand < 0.85) {
+          color = colorPalette[0]; // 85% base color
+        } else if (rand < 0.95) {
+          color = colorPalette[1]; // 10% secondary color
+        } else if (rand < 0.99) {
+          color = colorPalette[2]; // 4% accent color
+        } else {
+          color = colorPalette[3]; // 1% highlight color
+        }
+        
+        colorsArray.set(color, i * 3);
       }
       
-      colors.set(color, i * 3);
-    }
-    
-    console.log('[TechGridBackground] Generated', positions.length / 3, 'points with colors');
-    return { positions, colors };
+      console.log('[TechGridBackground] Generated', positionsArray.length / 3, 'points with colors');
+      return { positions: positionsArray, colors: colorsArray };
     } catch (err: any) {
       console.error('[TechGridBackground] Error generating points:', err);
       setError(`Points generation error: ${err.message}`);

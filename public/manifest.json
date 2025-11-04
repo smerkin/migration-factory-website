@@ -1,0 +1,22 @@
+{
+  "name": "Migration Factory",
+  "short_name": "MF",
+  "description": "Tool-driven data migrations for ERP, CRM & M&A",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#FF8A00",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
+
