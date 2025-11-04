@@ -107,19 +107,30 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     }
   }, [variant]);
 
-  // Animate rotation and movement
+  // Animate rotation and movement - more visible animation
   useFrame((state) => {
     try {
       if (ref.current) {
         const time = state.clock.getElapsedTime();
-        // Smooth rotation
-        ref.current.rotation.x = time * 0.05;
-        ref.current.rotation.y = time * 0.075;
-        ref.current.rotation.z = time * 0.02;
+        // More visible rotation - faster
+        ref.current.rotation.x = time * 0.1;
+        ref.current.rotation.y = time * 0.15;
+        ref.current.rotation.z = time * 0.05;
         
-        // Subtle floating movement
-        ref.current.position.y = Math.sin(time * 0.3) * 2;
-        ref.current.position.x = Math.cos(time * 0.2) * 1.5;
+        // More visible floating movement
+        ref.current.position.y = Math.sin(time * 0.5) * 3;
+        ref.current.position.x = Math.cos(time * 0.4) * 2.5;
+        
+        // Log animation every 2 seconds for debugging
+        if (Math.floor(time) % 2 === 0 && Math.floor(time * 10) % 20 === 0) {
+          console.log('[TechGridBackground] Animation running, time:', time.toFixed(2), 'rotation:', {
+            x: ref.current.rotation.x.toFixed(2),
+            y: ref.current.rotation.y.toFixed(2),
+            z: ref.current.rotation.z.toFixed(2)
+          });
+        }
+      } else {
+        console.warn('[TechGridBackground] useFrame: ref.current is null');
       }
     } catch (err: any) {
       console.error('[TechGridBackground] Animation error:', err);
@@ -154,15 +165,15 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
         </mesh>
       )}
       <Points ref={ref} geometry={geometry} frustumCulled={false}>
-        <PointMaterial
-          transparent
-          vertexColors={true}
-          size={0.18}
-          sizeAttenuation={true}
-          depthWrite={false}
-          opacity={0.7}
-          blending={THREE.AdditiveBlending}
-        />
+      <PointMaterial
+        transparent
+        vertexColors={true}
+        size={0.25}
+        sizeAttenuation={true}
+        depthWrite={false}
+        opacity={0.8}
+        blending={THREE.AdditiveBlending}
+      />
       </Points>
     </>
   );
@@ -193,10 +204,15 @@ function Connections({ variant = 'grayOrange' }: { variant?: keyof typeof colorP
   }, []);
 
   useFrame((state) => {
-    if (linesRef.current) {
-      const time = state.clock.getElapsedTime();
-      linesRef.current.rotation.y = time * 0.03;
-      linesRef.current.rotation.x = Math.sin(time * 0.1) * 0.1;
+    try {
+      if (linesRef.current) {
+        const time = state.clock.getElapsedTime();
+        linesRef.current.rotation.y = time * 0.05;
+        linesRef.current.rotation.x = Math.sin(time * 0.2) * 0.2;
+        linesRef.current.rotation.z = Math.cos(time * 0.15) * 0.1;
+      }
+    } catch (err: any) {
+      console.error('[TechGridBackground] Connections animation error:', err);
     }
   });
 
@@ -229,11 +245,7 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
     setIsMounted(true);
     console.log('[TechGridBackground] Component mounted, variant:', variant);
     
-    // Check if Three.js is available
-    if (typeof window !== 'undefined' && !window.THREE) {
-      console.error('[TechGridBackground] THREE is not available on window');
-    }
-    
+    // THREE doesn't need to be on window - it's imported directly
     // Check if @react-three/fiber is available
     try {
       const r3f = require('@react-three/fiber');
