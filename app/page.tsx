@@ -1,13 +1,14 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
 import Services from '@/components/sections/Services';
 import Contact from '@/components/sections/Contact';
 import Footer from '@/components/sections/Footer';
+import BackgroundSwitcher from '@/components/BackgroundSwitcher';
 
 // Only background needs to be dynamic with ssr: false
 const TechGridBackground = dynamic(
@@ -16,12 +17,20 @@ const TechGridBackground = dynamic(
 );
 
 export default function Home() {
+  const [backgroundVariant, setBackgroundVariant] = useState<'grayOrange' | 'blueOrange' | 'warmOrange' | 'monochrome' | 'purpleOrange'>('grayOrange');
+
   return (
     <main className="relative min-h-screen">
       {/* Animated Background */}
       <Suspense fallback={null}>
-        <TechGridBackground />
+        <TechGridBackground variant={backgroundVariant} />
       </Suspense>
+
+      {/* Background Switcher */}
+      <BackgroundSwitcher 
+        currentVariant={backgroundVariant} 
+        onVariantChange={(variant) => setBackgroundVariant(variant as any)}
+      />
 
       {/* Header */}
       <Header />

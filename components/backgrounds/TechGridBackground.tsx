@@ -6,7 +6,50 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-function DataNodes() {
+// Color palette variants
+const colorPalettes = {
+  // Option 1: Dark gray with orange accents (visible, professional)
+  grayOrange: [
+    [0.3, 0.3, 0.3],    // Medium gray (85%) - visible but subtle
+    [0.5, 0.5, 0.5],    // Light gray (10%) - more visible
+    [1.0, 0.53, 0.0],   // Bright orange (4%) - brand accent
+    [0.85, 0.45, 0.0],  // Dark orange (1%) - deeper accent
+  ],
+  
+  // Option 2: Blue-gray with orange accents (tech, modern)
+  blueOrange: [
+    [0.2, 0.25, 0.3],   // Dark blue-gray (85%)
+    [0.3, 0.4, 0.5],    // Medium blue-gray (10%)
+    [0.4, 0.6, 0.8],    // Light blue (3%)
+    [1.0, 0.53, 0.0],   // Orange accent (2%)
+  ],
+  
+  // Option 3: Warm orange gradient (brand-aligned, visible)
+  warmOrange: [
+    [0.3, 0.15, 0.05],  // Dark orange-brown (80%) - visible
+    [0.6, 0.3, 0.1],    // Medium orange (15%) - clearly visible
+    [0.9, 0.5, 0.15],   // Bright orange (4%) - strong accent
+    [1.0, 0.53, 0.0],   // Primary orange (1%) - brand color
+  ],
+  
+  // Option 4: Subtle gray monochrome (minimal, elegant)
+  monochrome: [
+    [0.25, 0.25, 0.25], // Dark gray (88%)
+    [0.4, 0.4, 0.4],    // Medium gray (10%)
+    [0.55, 0.55, 0.55], // Light gray (1.5%)
+    [0.7, 0.7, 0.7],    // Very light gray (0.5%)
+  ],
+  
+  // Option 5: Purple-gray with orange accents (creative, unique)
+  purpleOrange: [
+    [0.2, 0.15, 0.25],  // Dark purple-gray (85%)
+    [0.35, 0.25, 0.4],  // Medium purple-gray (10%)
+    [0.5, 0.35, 0.6],   // Light purple (3%)
+    [1.0, 0.53, 0.0],   // Orange accent (2%)
+  ],
+};
+
+function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
   const ref = useRef<THREE.Points>(null);
   
   // Generate grid of points with colors
@@ -14,39 +57,7 @@ function DataNodes() {
     const positions = new Float32Array(2000 * 3);
     const colors = new Float32Array(2000 * 3);
     
-    // Option 1: Orange gradient palette (warm, brand-aligned)
-    // Different shades of orange from dark to bright
-    const colorPalette = [
-      [0.2, 0.1, 0.05],    // Very dark orange-brown (85%) - subtle base
-      [0.4, 0.2, 0.05],    // Dark orange (10%) - medium depth
-      [0.8, 0.4, 0.1],     // Medium orange (4%) - visible accent
-      [1.0, 0.53, 0.0],    // Bright orange (1%) - primary brand color
-    ];
-    
-    // Alternative palettes (commented out - can be switched):
-    // Option 2: Blue-orange tech palette
-    // const colorPalette = [
-    //   [0.1, 0.15, 0.2],    // Dark blue-gray (85%)
-    //   [0.2, 0.3, 0.4],     // Medium blue-gray (10%)
-    //   [0.3, 0.5, 0.7],     // Light blue (3%)
-    //   [1.0, 0.53, 0.0],    // Orange accent (2%)
-    // ];
-    
-    // Option 3: Warm gradient (red-orange-yellow)
-    // const colorPalette = [
-    //   [0.15, 0.08, 0.05],   // Dark red-brown (80%)
-    //   [0.4, 0.2, 0.05],     // Dark orange (15%)
-    //   [0.8, 0.5, 0.2],      // Medium orange-yellow (4%)
-    //   [1.0, 0.7, 0.3],      // Bright yellow-orange (1%)
-    // ];
-    
-    // Option 4: Monochrome dark (minimal, professional)
-    // const colorPalette = [
-    //   [0.12, 0.12, 0.12],   // Very dark gray (90%)
-    //   [0.18, 0.18, 0.18],   // Dark gray (8%)
-    //   [0.25, 0.25, 0.25],   // Medium gray (1.5%)
-    //   [0.35, 0.35, 0.35],   // Light gray (0.5%)
-    // ];
+    const colorPalette = colorPalettes[variant];
     
     for (let i = 0; i < 2000; i++) {
       const x = (Math.random() - 0.5) * 50;
@@ -59,20 +70,20 @@ function DataNodes() {
       const rand = Math.random();
       let color;
       if (rand < 0.85) {
-        color = colorPalette[0]; // 85% very dark orange-brown
+        color = colorPalette[0]; // 85% base color
       } else if (rand < 0.95) {
-        color = colorPalette[1]; // 10% dark orange
+        color = colorPalette[1]; // 10% secondary color
       } else if (rand < 0.99) {
-        color = colorPalette[2]; // 4% medium orange
+        color = colorPalette[2]; // 4% accent color
       } else {
-        color = colorPalette[3]; // 1% bright orange
+        color = colorPalette[3]; // 1% highlight color
       }
       
       colors.set(color, i * 3);
     }
     
     return { positions, colors };
-  }, []);
+  }, [variant]);
 
   // Animate rotation
   useFrame((state) => {
@@ -94,17 +105,17 @@ function DataNodes() {
       <PointMaterial
         transparent
         vertexColors={true}
-        size={0.12}
+        size={0.15}
         sizeAttenuation={true}
         depthWrite={false}
-        opacity={0.5}
+        opacity={0.6}
         blending={THREE.AdditiveBlending}
       />
     </Points>
   );
 }
 
-function Connections() {
+function Connections({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
   const linesRef = useRef<THREE.LineSegments>(null);
 
   const geometry = useMemo(() => {
@@ -134,19 +145,28 @@ function Connections() {
     }
   });
 
+  // Get line color based on variant
+  const lineColor = variant === 'blueOrange' ? '#4A90E2' : 
+                     variant === 'purpleOrange' ? '#9B59B6' : 
+                     '#FF8A00';
+
   return (
     <lineSegments ref={linesRef} geometry={geometry}>
       <lineBasicMaterial
-        color="#FF8A00"
+        color={lineColor}
         transparent
-        opacity={0.08}
+        opacity={0.1}
         blending={THREE.AdditiveBlending}
       />
     </lineSegments>
   );
 }
 
-export default function TechGridBackground() {
+interface TechGridBackgroundProps {
+  variant?: keyof typeof colorPalettes;
+}
+
+export default function TechGridBackground({ variant = 'grayOrange' }: TechGridBackgroundProps) {
   return (
     <div className="fixed inset-0 z-0">
       <Canvas
@@ -154,8 +174,8 @@ export default function TechGridBackground() {
         style={{ background: 'transparent' }}
       >
         <ambientLight intensity={0.5} />
-        <DataNodes />
-        <Connections />
+        <DataNodes variant={variant} />
+        <Connections variant={variant} />
       </Canvas>
     </div>
   );
