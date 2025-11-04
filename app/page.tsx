@@ -10,26 +10,64 @@ import Contact from '@/components/sections/Contact';
 import Footer from '@/components/sections/Footer';
 import BackgroundSwitcher from '@/components/BackgroundSwitcher';
 
-// Only background needs to be dynamic with ssr: false
+// Dynamic imports for all animation types
 const TechGridBackground = dynamic(
   () => import('@/components/backgrounds/TechGridBackground'),
   { ssr: false }
 );
 
+const NetworkGraphBackground = dynamic(
+  () => import('@/components/backgrounds/NetworkGraphBackground'),
+  { ssr: false }
+);
+
+const DataStreamsBackground = dynamic(
+  () => import('@/components/backgrounds/DataStreamsBackground'),
+  { ssr: false }
+);
+
+const CircuitBoardBackground = dynamic(
+  () => import('@/components/backgrounds/CircuitBoardBackground'),
+  { ssr: false }
+);
+
+const MatrixCodeBackground = dynamic(
+  () => import('@/components/backgrounds/MatrixCodeBackground'),
+  { ssr: false }
+);
+
 export default function Home() {
+  const [animationType, setAnimationType] = useState<'techGrid' | 'networkGraph' | 'dataStreams' | 'circuitBoard' | 'matrixCode'>('techGrid');
   const [backgroundVariant, setBackgroundVariant] = useState<'grayOrange' | 'blueOrange' | 'warmOrange' | 'monochrome' | 'purpleOrange'>('grayOrange');
+
+  const renderBackground = () => {
+    switch (animationType) {
+      case 'techGrid':
+        return <TechGridBackground variant={backgroundVariant} />;
+      case 'networkGraph':
+        return <NetworkGraphBackground />;
+      case 'dataStreams':
+        return <DataStreamsBackground />;
+      case 'circuitBoard':
+        return <CircuitBoardBackground />;
+      case 'matrixCode':
+        return <MatrixCodeBackground />;
+      default:
+        return <TechGridBackground variant={backgroundVariant} />;
+    }
+  };
 
   return (
     <main className="relative min-h-screen">
       {/* Animated Background */}
       <Suspense fallback={null}>
-        <TechGridBackground variant={backgroundVariant} />
+        {renderBackground()}
       </Suspense>
 
       {/* Background Switcher */}
       <BackgroundSwitcher 
-        currentVariant={backgroundVariant} 
-        onVariantChange={(variant) => setBackgroundVariant(variant as any)}
+        currentAnimation={animationType} 
+        onAnimationChange={(animation) => setAnimationType(animation as any)}
       />
 
       {/* Header */}
