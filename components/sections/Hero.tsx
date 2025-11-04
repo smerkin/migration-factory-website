@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Content */}
-      <div className="relative z-10 container-custom text-center px-6">
+      <div className="relative z-20 container-custom text-center">
         {/* Main Slogan - We can do IT */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}

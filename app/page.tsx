@@ -24,7 +24,7 @@ export default function Home() {
       <Header />
 
       {/* Content */}
-      <div className="relative z-10 pt-16">
+      <div className="relative z-20 pt-16">
         <Hero />
         <About />
         <Services />
