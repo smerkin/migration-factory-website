@@ -10,10 +10,10 @@ import * as THREE from 'three';
 const colorPalettes = {
   // Option 1: Dark gray with orange accents (visible, professional)
   grayOrange: [
-    [0.5, 0.5, 0.5],    // Light gray (70%) - clearly visible
-    [0.7, 0.7, 0.7],    // Bright gray (25%) - very visible
-    [1.0, 0.53, 0.0],   // Bright orange (4%) - brand accent
-    [1.0, 0.7, 0.3],    // Light orange (1%) - highlight
+    [1.0, 1.0, 1.0],    // WHITE (50%) - highly visible
+    [0.8, 0.8, 0.8],    // Light gray (30%) - very visible
+    [1.0, 0.53, 0.0],   // Bright orange (15%) - brand accent
+    [1.0, 0.7, 0.3],    // Light orange (5%) - highlight
   ],
   
   // Option 2: Blue-gray with orange accents (tech, modern)
@@ -84,17 +84,17 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
         
         positionsArray.set([x, y, z], i * 3);
         
-      // Assign colors based on probability - more orange points for visibility
+      // Assign colors based on probability - WHITE and orange for maximum visibility
       const rand = Math.random();
       let color;
-      if (rand < 0.60) {
-        color = colorPalette[0]; // 60% base color - light gray
-      } else if (rand < 0.85) {
-        color = colorPalette[1]; // 25% secondary color - bright gray
-      } else if (rand < 0.98) {
-        color = colorPalette[2]; // 13% accent color - bright orange (increased from 4%)
+      if (rand < 0.50) {
+        color = colorPalette[0]; // 50% base color - WHITE
+      } else if (rand < 0.80) {
+        color = colorPalette[1]; // 30% secondary color - light gray
+      } else if (rand < 0.95) {
+        color = colorPalette[2]; // 15% accent color - bright orange
       } else {
-        color = colorPalette[3]; // 2% highlight color - light orange (increased from 1%)
+        color = colorPalette[3]; // 5% highlight color - light orange
       }
         
         colorsArray.set(color, i * 3);
@@ -168,13 +168,13 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       )}
       <Points ref={ref} geometry={geometry} frustumCulled={false}>
       <PointMaterial
-        transparent
+        transparent={false}
         vertexColors={true}
-        size={0.6}
+        size={1.0}
         sizeAttenuation={false}
-        depthWrite={false}
+        depthWrite={true}
         opacity={1.0}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
       />
       </Points>
     </>
@@ -301,6 +301,11 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
       >
             <ambientLight intensity={1.0} />
             <pointLight position={[10, 10, 10]} intensity={0.5} />
+        {/* Test sphere to verify Canvas is rendering */}
+        <mesh position={[0, 0, 0]}>
+          <sphereGeometry args={[1, 16, 16]} />
+          <meshStandardMaterial color="#FF8A00" emissive="#FF8A00" emissiveIntensity={0.5} />
+        </mesh>
         <DataNodes variant={variant} />
         <Connections variant={variant} />
       </Canvas>
