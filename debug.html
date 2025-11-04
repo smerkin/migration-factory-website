@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Migration Factory</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+        .warning { color: #ffaa44; }
+        pre { background: #2a2a2a; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Migration Factory - Debug Helper</h1>
+    <p>Откройте консоль браузера (F12) и проверьте ошибки.</p>
+    
+    <h2>Проверка компонентов:</h2>
+    <div id="checks"></div>
+
+    <h2>Проверка путей:</h2>
+    <div id="paths"></div>
+
+    <script>
+        const checks = document.getElementById('checks');
+        const paths = document.getElementById('paths');
+
+        // Проверка путей
+        const pathsToCheck = [
+            '/components/Header.tsx',
+            '/components/sections/Hero.tsx',
+            '/components/sections/About.tsx',
+            '/components/sections/Services.tsx',
+            '/components/sections/Contact.tsx',
+            '/components/sections/Footer.tsx',
+            '/components/backgrounds/TechGridBackground.tsx',
+        ];
+
+        paths.innerHTML = '<pre>' + pathsToCheck.map(p => p).join('\n') + '</pre>';
+
+        // Инструкции
+        checks.innerHTML = `
+            <div class="warning">
+                <h3>Шаги для диагностики:</h3>
+                <ol>
+                    <li>Откройте консоль браузера (F12 или Cmd+Option+I)</li>
+                    <li>Проверьте вкладку "Console" на наличие ошибок</li>
+                    <li>Проверьте вкладку "Network" на наличие 404 ошибок</li>
+                    <li>Проверьте вкладку "Elements" - есть ли контент в DOM?</li>
+                    <li>Проверьте логи сервера разработки в терминале</li>
+                </ol>
+            </div>
+        `;
+    </script>
+</body>
+</html>
+
