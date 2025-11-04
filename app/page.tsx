@@ -1,0 +1,36 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import Header from '@/components/Header';
+import Hero from '@/components/sections/Hero';
+import About from '@/components/sections/About';
+import Services from '@/components/sections/Services';
+import Contact from '@/components/sections/Contact';
+import Footer from '@/components/sections/Footer';
+
+// Dynamically import TechGrid background only
+const TechGridBackground = dynamic(
+  () => import('@/components/backgrounds/TechGridBackground'),
+  { ssr: false }
+);
+
+export default function Home() {
+  return (
+    <main className="relative min-h-screen">
+      {/* Animated Background */}
+      <TechGridBackground />
+
+      {/* Header */}
+      <Header />
+
+      {/* Content */}
+      <div className="relative z-10 pt-16">
+        <Hero />
+        <About />
+        <Services />
+        <Contact />
+        <Footer />
+      </div>
+    </main>
+  );
+}

@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default theme: Neon Purple */
+  --primary: #7A3FFF;
+  --primary-light: #9B6AFF;
+  --primary-dark: #5A1FDF;
+  --primary-glow: rgba(122, 63, 255, 0.5);
+}
+
+/* Theme variants - add class to body tag */
+body.theme-purple {
+  --primary: #7A3FFF;
+  --primary-light: #9B6AFF;
+  --primary-dark: #5A1FDF;
+  --primary-glow: rgba(122, 63, 255, 0.5);
+}
+
+body.theme-green {
+  --primary: #00FF9D;
+  --primary-light: #33FFAE;
+  --primary-dark: #00CC7D;
+  --primary-glow: rgba(0, 255, 157, 0.5);
+}
+
+body.theme-orange {
+  --primary: #FF8A00;
+  --primary-light: #FFA333;
+  --primary-dark: #CC6E00;
+  --primary-glow: rgba(255, 138, 0, 0.5);
+}
+
+body.theme-lime {
+  --primary: #C8FF00;
+  --primary-light: #D4FF33;
+  --primary-dark: #A0CC00;
+  --primary-glow: rgba(200, 255, 0, 0.5);
+}
+
+@layer base {
+  * {
+    @apply border-graphite-800;
+  }
+  
+  body {
+    @apply bg-graphite-950 text-graphite-50 font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
+
+  h1 {
+    @apply text-5xl md:text-7xl lg:text-8xl;
+  }
+
+  h2 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h3 {
+    @apply text-3xl md:text-4xl;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300;
+    @apply hover:scale-105 active:scale-95;
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 20px var(--primary-glow);
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-light);
+    box-shadow: 0 6px 30px var(--primary-glow);
+  }
+
+  .card {
+    @apply bg-graphite-900/80 border border-graphite-800/50 rounded-2xl p-8;
+    @apply transition-all duration-300 backdrop-blur-sm;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .card:hover {
+    @apply border-opacity-100;
+    border-color: var(--primary);
+    box-shadow: 0 8px 40px var(--primary-glow), 0 0 0 1px var(--primary-glow);
+    transform: translateY(-2px);
+  }
+
+  .section {
+    @apply py-24 md:py-36 px-6 md:px-12;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 50%, var(--primary-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .glow-effect {
+    filter: drop-shadow(0 0 20px var(--primary-glow));
+    transition: filter 0.3s ease;
+  }
+
+  .glow-effect:hover {
+    filter: drop-shadow(0 0 30px var(--primary-glow));
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-graphite-950;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  @apply rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Selection colors */
+::selection {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--primary-glow) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
