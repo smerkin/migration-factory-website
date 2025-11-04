@@ -85,11 +85,18 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     return { positions, colors };
   }, [variant]);
 
-  // Animate rotation
+  // Animate rotation and movement
   useFrame((state) => {
     if (ref.current) {
-      ref.current.rotation.x = state.clock.getElapsedTime() * 0.05;
-      ref.current.rotation.y = state.clock.getElapsedTime() * 0.075;
+      const time = state.clock.getElapsedTime();
+      // Smooth rotation
+      ref.current.rotation.x = time * 0.05;
+      ref.current.rotation.y = time * 0.075;
+      ref.current.rotation.z = time * 0.02;
+      
+      // Subtle floating movement
+      ref.current.position.y = Math.sin(time * 0.3) * 2;
+      ref.current.position.x = Math.cos(time * 0.2) * 1.5;
     }
   });
 
@@ -105,10 +112,10 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       <PointMaterial
         transparent
         vertexColors={true}
-        size={0.15}
+        size={0.18}
         sizeAttenuation={true}
         depthWrite={false}
-        opacity={0.6}
+        opacity={0.7}
         blending={THREE.AdditiveBlending}
       />
     </Points>
@@ -141,7 +148,9 @@ function Connections({ variant = 'grayOrange' }: { variant?: keyof typeof colorP
 
   useFrame((state) => {
     if (linesRef.current) {
-      linesRef.current.rotation.y = state.clock.getElapsedTime() * 0.03;
+      const time = state.clock.getElapsedTime();
+      linesRef.current.rotation.y = time * 0.03;
+      linesRef.current.rotation.x = Math.sin(time * 0.1) * 0.1;
     }
   });
 
@@ -168,12 +177,14 @@ interface TechGridBackgroundProps {
 
 export default function TechGridBackground({ variant = 'grayOrange' }: TechGridBackgroundProps) {
   return (
-    <div className="fixed inset-0 z-0">
+    <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 25], fov: 75 }}
         style={{ background: 'transparent' }}
+        gl={{ alpha: true, antialias: true }}
+        dpr={[1, 2]}
       >
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.6} />
         <DataNodes variant={variant} />
         <Connections variant={variant} />
       </Canvas>
