@@ -1,7 +1,7 @@
 /// <reference types="@react-three/fiber" />
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -51,9 +51,25 @@ const colorPalettes = {
 
 function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
   const ref = useRef<THREE.Points>(null);
+  const [error, setError] = useState<string | null>(null);
   
+  useEffect(() => {
+    try {
+      if (!ref.current) {
+        console.warn('[TechGridBackground] DataNodes ref is null');
+      } else {
+        console.log('[TechGridBackground] DataNodes initialized successfully');
+      }
+    } catch (err: any) {
+      const errorMsg = `DataNodes error: ${err.message}`;
+      console.error(errorMsg, err);
+      setError(errorMsg);
+    }
+  }, []);
+
   // Generate grid of points with colors
   const { positions, colors } = useMemo(() => {
+    try {
     const positions = new Float32Array(2000 * 3);
     const colors = new Float32Array(2000 * 3);
     
@@ -82,43 +98,73 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       colors.set(color, i * 3);
     }
     
+    console.log('[TechGridBackground] Generated', positions.length / 3, 'points with colors');
     return { positions, colors };
+    } catch (err: any) {
+      console.error('[TechGridBackground] Error generating points:', err);
+      setError(`Points generation error: ${err.message}`);
+      return { positions: new Float32Array(0), colors: new Float32Array(0) };
+    }
   }, [variant]);
 
   // Animate rotation and movement
   useFrame((state) => {
-    if (ref.current) {
-      const time = state.clock.getElapsedTime();
-      // Smooth rotation
-      ref.current.rotation.x = time * 0.05;
-      ref.current.rotation.y = time * 0.075;
-      ref.current.rotation.z = time * 0.02;
-      
-      // Subtle floating movement
-      ref.current.position.y = Math.sin(time * 0.3) * 2;
-      ref.current.position.x = Math.cos(time * 0.2) * 1.5;
+    try {
+      if (ref.current) {
+        const time = state.clock.getElapsedTime();
+        // Smooth rotation
+        ref.current.rotation.x = time * 0.05;
+        ref.current.rotation.y = time * 0.075;
+        ref.current.rotation.z = time * 0.02;
+        
+        // Subtle floating movement
+        ref.current.position.y = Math.sin(time * 0.3) * 2;
+        ref.current.position.x = Math.cos(time * 0.2) * 1.5;
+      }
+    } catch (err: any) {
+      console.error('[TechGridBackground] Animation error:', err);
+      setError(`Animation error: ${err.message}`);
     }
   });
 
   const geometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    return geo;
+    try {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      console.log('[TechGridBackground] Geometry created with', positions.length / 3, 'vertices');
+      return geo;
+    } catch (err: any) {
+      console.error('[TechGridBackground] Geometry error:', err);
+      setError(`Geometry error: ${err.message}`);
+      return new THREE.BufferGeometry();
+    }
   }, [positions, colors]);
 
+  if (error) {
+    console.error('[TechGridBackground] Rendering error display:', error);
+  }
+
   return (
-    <Points ref={ref} geometry={geometry} frustumCulled={false}>
-      <PointMaterial
-        transparent
-        vertexColors={true}
-        size={0.18}
-        sizeAttenuation={true}
-        depthWrite={false}
-        opacity={0.7}
-        blending={THREE.AdditiveBlending}
-      />
-    </Points>
+    <>
+      {error && (
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshBasicMaterial color="red" />
+        </mesh>
+      )}
+      <Points ref={ref} geometry={geometry} frustumCulled={false}>
+        <PointMaterial
+          transparent
+          vertexColors={true}
+          size={0.18}
+          sizeAttenuation={true}
+          depthWrite={false}
+          opacity={0.7}
+          blending={THREE.AdditiveBlending}
+        />
+      </Points>
+    </>
   );
 }
 
@@ -176,18 +222,78 @@ interface TechGridBackgroundProps {
 }
 
 export default function TechGridBackground({ variant = 'grayOrange' }: TechGridBackgroundProps) {
+  const [canvasError, setCanvasError] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    console.log('[TechGridBackground] Component mounted, variant:', variant);
+    
+    // Check if Three.js is available
+    if (typeof window !== 'undefined' && !window.THREE) {
+      console.error('[TechGridBackground] THREE is not available on window');
+    }
+    
+    // Check if @react-three/fiber is available
+    try {
+      const r3f = require('@react-three/fiber');
+      console.log('[TechGridBackground] @react-three/fiber is available');
+    } catch (err) {
+      console.error('[TechGridBackground] @react-three/fiber not available:', err);
+      setCanvasError('@react-three/fiber not loaded');
+    }
+  }, [variant]);
+
+  if (!isMounted) {
+    return (
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-4 left-4 bg-red-500/80 text-white p-2 rounded text-xs z-50">
+          Loading background...
+        </div>
+      </div>
+    );
+  }
+
+  if (canvasError) {
+    return (
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-4 left-4 bg-red-500/80 text-white p-2 rounded text-xs z-50 max-w-xs">
+          <strong>Background Error:</strong> {canvasError}
+          <br />
+          Check browser console for details
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 25], fov: 75 }}
         style={{ background: 'transparent' }}
-        gl={{ alpha: true, antialias: true }}
+        gl={{ 
+          alpha: true, 
+          antialias: true,
+          powerPreference: 'high-performance'
+        }}
         dpr={[1, 2]}
+        onCreated={(state) => {
+          console.log('[TechGridBackground] Canvas created', state);
+        }}
+        onError={(error) => {
+          console.error('[TechGridBackground] Canvas error:', error);
+          setCanvasError(error.message || 'Unknown Canvas error');
+        }}
       >
         <ambientLight intensity={0.6} />
         <DataNodes variant={variant} />
         <Connections variant={variant} />
       </Canvas>
+      {/* Debug info */}
+      <div className="absolute top-4 right-4 bg-graphite-900/80 text-graphite-300 p-2 rounded text-xs z-50 pointer-events-auto">
+        <div>Variant: {variant}</div>
+        <div>Canvas: Active</div>
+      </div>
     </div>
   );
 }
