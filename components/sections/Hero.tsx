@@ -1,9 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { ChevronDown, Zap, Shield, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 export default function Hero() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const scrollToContact = () => {
     const contactSection = document.getElementById('contact');
     contactSection?.scrollIntoView({ behavior: 'smooth' });
@@ -22,7 +28,7 @@ export default function Hero() {
       <div className="relative z-20 container-custom text-center">
         {/* Main Slogan - We can do IT */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          initial={mounted ? { opacity: 0, scale: 0.9, y: 20 } : { opacity: 1, scale: 1, y: 0 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
           viewport={{ once: true }}
