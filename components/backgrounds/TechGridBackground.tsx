@@ -14,13 +14,39 @@ function DataNodes() {
     const positions = new Float32Array(2000 * 3);
     const colors = new Float32Array(2000 * 3);
     
-    // Color palette: dark gray, medium gray, orange accent
+    // Option 1: Orange gradient palette (warm, brand-aligned)
+    // Different shades of orange from dark to bright
     const colorPalette = [
-      [0.15, 0.15, 0.15],  // Dark gray (90%)
-      [0.25, 0.25, 0.25],  // Medium gray (7%)
-      [1.0, 0.53, 0.0],    // Orange accent (3%) - primary color
-      [0.85, 0.45, 0.0],   // Darker orange (rare)
+      [0.2, 0.1, 0.05],    // Very dark orange-brown (85%) - subtle base
+      [0.4, 0.2, 0.05],    // Dark orange (10%) - medium depth
+      [0.8, 0.4, 0.1],     // Medium orange (4%) - visible accent
+      [1.0, 0.53, 0.0],    // Bright orange (1%) - primary brand color
     ];
+    
+    // Alternative palettes (commented out - can be switched):
+    // Option 2: Blue-orange tech palette
+    // const colorPalette = [
+    //   [0.1, 0.15, 0.2],    // Dark blue-gray (85%)
+    //   [0.2, 0.3, 0.4],     // Medium blue-gray (10%)
+    //   [0.3, 0.5, 0.7],     // Light blue (3%)
+    //   [1.0, 0.53, 0.0],    // Orange accent (2%)
+    // ];
+    
+    // Option 3: Warm gradient (red-orange-yellow)
+    // const colorPalette = [
+    //   [0.15, 0.08, 0.05],   // Dark red-brown (80%)
+    //   [0.4, 0.2, 0.05],     // Dark orange (15%)
+    //   [0.8, 0.5, 0.2],      // Medium orange-yellow (4%)
+    //   [1.0, 0.7, 0.3],      // Bright yellow-orange (1%)
+    // ];
+    
+    // Option 4: Monochrome dark (minimal, professional)
+    // const colorPalette = [
+    //   [0.12, 0.12, 0.12],   // Very dark gray (90%)
+    //   [0.18, 0.18, 0.18],   // Dark gray (8%)
+    //   [0.25, 0.25, 0.25],   // Medium gray (1.5%)
+    //   [0.35, 0.35, 0.35],   // Light gray (0.5%)
+    // ];
     
     for (let i = 0; i < 2000; i++) {
       const x = (Math.random() - 0.5) * 50;
@@ -32,14 +58,14 @@ function DataNodes() {
       // Assign colors based on probability
       const rand = Math.random();
       let color;
-      if (rand < 0.9) {
-        color = colorPalette[0]; // 90% dark gray
-      } else if (rand < 0.97) {
-        color = colorPalette[1]; // 7% medium gray
+      if (rand < 0.85) {
+        color = colorPalette[0]; // 85% very dark orange-brown
+      } else if (rand < 0.95) {
+        color = colorPalette[1]; // 10% dark orange
       } else if (rand < 0.99) {
-        color = colorPalette[2]; // 2% orange accent
+        color = colorPalette[2]; // 4% medium orange
       } else {
-        color = colorPalette[3]; // 1% darker orange
+        color = colorPalette[3]; // 1% bright orange
       }
       
       colors.set(color, i * 3);
