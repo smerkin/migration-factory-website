@@ -108,23 +108,20 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     }
   }, [variant]);
 
-  // Animate rotation and movement - rotate the group
+  // Animate rotation only - no movement to avoid motion sickness
   useFrame((state) => {
     try {
       if (ref.current) {
         const time = state.clock.getElapsedTime();
-        // Rotate the entire group
-        ref.current.rotation.x = time * 0.1;
-        ref.current.rotation.y = time * 0.15;
-        ref.current.rotation.z = time * 0.05;
+        // Rotate the entire group only - no position changes
+        ref.current.rotation.x = time * 0.05;
+        ref.current.rotation.y = time * 0.075;
+        ref.current.rotation.z = time * 0.02;
         
-        // Floating movement
-        ref.current.position.y = Math.sin(time * 0.5) * 3;
-        ref.current.position.x = Math.cos(time * 0.4) * 2.5;
-        
-        if (Math.floor(time) % 2 === 0 && Math.floor(time * 10) % 20 === 0) {
-          console.log('[TechGridBackground] Animation running, time:', time.toFixed(2), 'points:', pointMeshes.length);
-        }
+        // No floating movement - fixed position
+        ref.current.position.y = 0;
+        ref.current.position.x = 0;
+        ref.current.position.z = 0;
       }
     } catch (err: any) {
       console.error('[TechGridBackground] Animation error:', err);
