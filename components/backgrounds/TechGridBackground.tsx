@@ -1,175 +1,61 @@
-/// <reference types="@react-three/fiber" />
 'use client';
 
-import { useRef, useMemo, useEffect, useState } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Color palette variants
-const colorPalettes = {
-  // Option 1: Dark gray with orange accents (visible, professional)
-  grayOrange: [
-    [0.3, 0.3, 0.3],    // Medium gray (85%) - visible but subtle
-    [0.5, 0.5, 0.5],    // Light gray (10%) - more visible
-    [1.0, 0.53, 0.0],   // Bright orange (4%) - brand accent
-    [0.85, 0.45, 0.0],  // Dark orange (1%) - deeper accent
-  ],
-  
-  // Option 2: Blue-gray with orange accents (tech, modern)
-  blueOrange: [
-    [0.2, 0.25, 0.3],   // Dark blue-gray (85%)
-    [0.3, 0.4, 0.5],    // Medium blue-gray (10%)
-    [0.4, 0.6, 0.8],    // Light blue (3%)
-    [1.0, 0.53, 0.0],   // Orange accent (2%)
-  ],
-  
-  // Option 3: Warm orange gradient (brand-aligned, visible)
-  warmOrange: [
-    [0.3, 0.15, 0.05],  // Dark orange-brown (80%) - visible
-    [0.6, 0.3, 0.1],    // Medium orange (15%) - clearly visible
-    [0.9, 0.5, 0.15],   // Bright orange (4%) - strong accent
-    [1.0, 0.53, 0.0],   // Primary orange (1%) - brand color
-  ],
-  
-  // Option 4: Subtle gray monochrome (minimal, elegant)
-  monochrome: [
-    [0.25, 0.25, 0.25], // Dark gray (88%)
-    [0.4, 0.4, 0.4],    // Medium gray (10%)
-    [0.55, 0.55, 0.55], // Light gray (1.5%)
-    [0.7, 0.7, 0.7],    // Very light gray (0.5%)
-  ],
-  
-  // Option 5: Purple-gray with orange accents (creative, unique)
-  purpleOrange: [
-    [0.2, 0.15, 0.25],  // Dark purple-gray (85%)
-    [0.35, 0.25, 0.4],  // Medium purple-gray (10%)
-    [0.5, 0.35, 0.6],   // Light purple (3%)
-    [1.0, 0.53, 0.0],   // Orange accent (2%)
-  ],
-};
-
-function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
+function DataNodes() {
   const ref = useRef<THREE.Points>(null);
-  const [error, setError] = useState<string | null>(null);
   
-  useEffect(() => {
-    try {
-      if (!ref.current) {
-        console.warn('[TechGridBackground] DataNodes ref is null');
-      } else {
-        console.log('[TechGridBackground] DataNodes initialized successfully');
-      }
-    } catch (err: any) {
-      const errorMsg = `DataNodes error: ${err.message}`;
-      console.error(errorMsg, err);
-      setError(errorMsg);
+  // Generate grid of points
+  const particlesPosition = useMemo(() => {
+    const positions = new Float32Array(2000 * 3);
+    
+    for (let i = 0; i < 2000; i++) {
+      const x = (Math.random() - 0.5) * 50;
+      const y = (Math.random() - 0.5) * 50;
+      const z = (Math.random() - 0.5) * 50;
+      
+      positions.set([x, y, z], i * 3);
     }
+    
+    return positions;
   }, []);
 
-    // Generate grid of points with colors - more points for visibility
-    const { positions, colors } = useMemo(() => {
-      try {
-      const numPoints = 2000;
-      const positionsArray = new Float32Array(numPoints * 3);
-      const colorsArray = new Float32Array(numPoints * 3);
-      
-      const colorPalette = colorPalettes[variant];
-      
-      for (let i = 0; i < numPoints; i++) {
-        const x = (Math.random() - 0.5) * 50;
-        const y = (Math.random() - 0.5) * 50;
-        const z = (Math.random() - 0.5) * 50;
-        
-        positionsArray.set([x, y, z], i * 3);
-        
-      // Assign colors based on probability
-      const rand = Math.random();
-      let color;
-      if (rand < 0.85) {
-        color = colorPalette[0]; // 85% base color
-      } else if (rand < 0.95) {
-        color = colorPalette[1]; // 10% secondary color
-      } else if (rand < 0.99) {
-        color = colorPalette[2]; // 4% accent color
-      } else {
-        color = colorPalette[3]; // 1% highlight color
-      }
-        
-        colorsArray.set(color, i * 3);
-      }
-      
-      console.log('[TechGridBackground] Generated', positionsArray.length / 3, 'points with colors');
-      return { positions: positionsArray, colors: colorsArray };
-    } catch (err: any) {
-      console.error('[TechGridBackground] Error generating points:', err);
-      setError(`Points generation error: ${err.message}`);
-      return { positions: new Float32Array(0), colors: new Float32Array(0) };
-    }
-  }, [variant]);
-
-  // Animate rotation and movement
+  // Animate rotation
   useFrame((state) => {
-    try {
-      if (ref.current) {
-        const time = state.clock.getElapsedTime();
-        // Smooth rotation
-        ref.current.rotation.x = time * 0.05;
-        ref.current.rotation.y = time * 0.075;
-        ref.current.rotation.z = time * 0.02;
-        
-        // Subtle floating movement
-        ref.current.position.y = Math.sin(time * 0.3) * 2;
-        ref.current.position.x = Math.cos(time * 0.2) * 1.5;
-      }
-    } catch (err: any) {
-      console.error('[TechGridBackground] Animation error:', err);
-      setError(`Animation error: ${err.message}`);
+    if (ref.current) {
+      ref.current.rotation.x = state.clock.getElapsedTime() * 0.05;
+      ref.current.rotation.y = state.clock.getElapsedTime() * 0.075;
     }
   });
 
-  const geometry = useMemo(() => {
-    try {
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-      console.log('[TechGridBackground] Geometry created with', positions.length / 3, 'vertices');
-      return geo;
-    } catch (err: any) {
-      console.error('[TechGridBackground] Geometry error:', err);
-      setError(`Geometry error: ${err.message}`);
-      return new THREE.BufferGeometry();
+  // Get primary color from CSS variable or use default
+  const primaryColor = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      const primary = getComputedStyle(root).getPropertyValue('--primary').trim();
+      return primary || '#FF8A00';
     }
-  }, [positions, colors]);
-
-  if (error) {
-    console.error('[TechGridBackground] Rendering error display:', error);
-  }
+    return '#FF8A00';
+  }, []);
 
   return (
-    <>
-      {error && (
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshBasicMaterial color="red" />
-        </mesh>
-      )}
-      <Points ref={ref} geometry={geometry} frustumCulled={false}>
-        <PointMaterial
-          transparent
-          vertexColors={true}
-          size={0.18}
-          sizeAttenuation={true}
-          depthWrite={false}
-          opacity={0.7}
-          blending={THREE.AdditiveBlending}
-        />
-      </Points>
-    </>
+    <Points ref={ref} positions={particlesPosition} stride={3} frustumCulled={false}>
+      <PointMaterial
+        transparent
+        color={primaryColor}
+        size={0.15}
+        sizeAttenuation={true}
+        depthWrite={false}
+        opacity={0.8}
+      />
+    </Points>
   );
 }
 
-function Connections({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
+function Connections() {
   const linesRef = useRef<THREE.LineSegments>(null);
 
   const geometry = useMemo(() => {
@@ -195,102 +81,53 @@ function Connections({ variant = 'grayOrange' }: { variant?: keyof typeof colorP
 
   useFrame((state) => {
     if (linesRef.current) {
-      const time = state.clock.getElapsedTime();
-      linesRef.current.rotation.y = time * 0.03;
-      linesRef.current.rotation.x = Math.sin(time * 0.1) * 0.1;
+      linesRef.current.rotation.y = state.clock.getElapsedTime() * 0.03;
     }
   });
 
-  // Get line color based on variant
-  const lineColor = variant === 'blueOrange' ? '#4A90E2' : 
-                     variant === 'purpleOrange' ? '#9B59B6' : 
-                     '#FF8A00';
+  // Get primary color from CSS variable or use default
+  const primaryColor = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement;
+      const primary = getComputedStyle(root).getPropertyValue('--primary').trim();
+      return primary || '#FF8A00';
+    }
+    return '#FF8A00';
+  }, []);
 
   return (
     <lineSegments ref={linesRef} geometry={geometry}>
       <lineBasicMaterial
-        color={lineColor}
+        color={primaryColor}
         transparent
-        opacity={0.1}
+        opacity={0.15}
         blending={THREE.AdditiveBlending}
       />
     </lineSegments>
   );
 }
 
-interface TechGridBackgroundProps {
-  variant?: keyof typeof colorPalettes;
-}
-
-export default function TechGridBackground({ variant = 'grayOrange' }: TechGridBackgroundProps) {
-  const [canvasError, setCanvasError] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
+export default function TechGridBackground() {
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-    console.log('[TechGridBackground] Component mounted, variant:', variant);
-    
-    // THREE doesn't need to be on window - it's imported directly
-    // Check if @react-three/fiber is available
-    try {
-      const r3f = require('@react-three/fiber');
-      console.log('[TechGridBackground] @react-three/fiber is available');
-    } catch (err) {
-      console.error('[TechGridBackground] @react-three/fiber not available:', err);
-      setCanvasError('@react-three/fiber not loaded');
-    }
-  }, [variant]);
+    setMounted(true);
+  }, []);
 
-  if (!isMounted) {
-    return (
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-4 left-4 bg-red-500/80 text-white p-2 rounded text-xs z-50">
-          Loading background...
-        </div>
-      </div>
-    );
-  }
-
-  if (canvasError) {
-    return (
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-4 left-4 bg-red-500/80 text-white p-2 rounded text-xs z-50 max-w-xs">
-          <strong>Background Error:</strong> {canvasError}
-          <br />
-          Check browser console for details
-        </div>
-      </div>
-    );
+  if (!mounted) {
+    return null;
   }
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
-          <Canvas
-            camera={{ position: [0, 0, 25], fov: 75 }}
-            style={{ background: 'transparent' }}
-            gl={{ 
-              alpha: true, 
-              antialias: true,
-              powerPreference: 'high-performance'
-            }}
-            dpr={[1, 2]}
-        onCreated={(state) => {
-          console.log('[TechGridBackground] Canvas created', state);
-        }}
-        onError={(error) => {
-          console.error('[TechGridBackground] Canvas error:', error);
-          setCanvasError(error.message || 'Unknown Canvas error');
-        }}
+      <Canvas
+        camera={{ position: [0, 0, 25], fov: 75 }}
+        style={{ background: 'transparent' }}
       >
-            <ambientLight intensity={0.6} />
-        <DataNodes variant={variant} />
-        <Connections variant={variant} />
+        <ambientLight intensity={0.5} />
+        <DataNodes />
+        <Connections />
       </Canvas>
-      {/* Debug info */}
-      <div className="absolute top-4 right-4 bg-graphite-900/80 text-graphite-300 p-2 rounded text-xs z-50 pointer-events-auto">
-        <div>Variant: {variant}</div>
-        <div>Canvas: Active</div>
-      </div>
     </div>
   );
 }
