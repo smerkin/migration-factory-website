@@ -77,23 +77,24 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       const colorPalette = colorPalettes[variant];
       
       for (let i = 0; i < numPoints; i++) {
-        const x = (Math.random() - 0.5) * 50;
-        const y = (Math.random() - 0.5) * 50;
-        const z = (Math.random() - 0.5) * 50;
+        // Closer to camera for better visibility - smaller range
+        const x = (Math.random() - 0.5) * 30;
+        const y = (Math.random() - 0.5) * 30;
+        const z = (Math.random() - 0.5) * 20; // Closer to camera
         
         positionsArray.set([x, y, z], i * 3);
         
-      // Assign colors based on probability - more visible colors
+      // Assign colors based on probability - more orange points for visibility
       const rand = Math.random();
       let color;
-      if (rand < 0.70) {
-        color = colorPalette[0]; // 70% base color - light gray
-      } else if (rand < 0.95) {
+      if (rand < 0.60) {
+        color = colorPalette[0]; // 60% base color - light gray
+      } else if (rand < 0.85) {
         color = colorPalette[1]; // 25% secondary color - bright gray
-      } else if (rand < 0.99) {
-        color = colorPalette[2]; // 4% accent color - bright orange
+      } else if (rand < 0.98) {
+        color = colorPalette[2]; // 13% accent color - bright orange (increased from 4%)
       } else {
-        color = colorPalette[3]; // 1% highlight color - light orange
+        color = colorPalette[3]; // 2% highlight color - light orange (increased from 1%)
       }
         
         colorsArray.set(color, i * 3);
@@ -169,8 +170,8 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       <PointMaterial
         transparent
         vertexColors={true}
-        size={0.4}
-        sizeAttenuation={true}
+        size={0.6}
+        sizeAttenuation={false}
         depthWrite={false}
         opacity={1.0}
         blending={THREE.AdditiveBlending}
@@ -281,15 +282,15 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
-      <Canvas
-        camera={{ position: [0, 0, 25], fov: 75 }}
-        style={{ background: 'transparent' }}
-        gl={{ 
-          alpha: true, 
-          antialias: true,
-          powerPreference: 'high-performance'
-        }}
-        dpr={[1, 2]}
+          <Canvas
+            camera={{ position: [0, 0, 15], fov: 75 }}
+            style={{ background: 'transparent' }}
+            gl={{ 
+              alpha: true, 
+              antialias: true,
+              powerPreference: 'high-performance'
+            }}
+            dpr={[1, 2]}
         onCreated={(state) => {
           console.log('[TechGridBackground] Canvas created', state);
         }}
@@ -298,7 +299,8 @@ export default function TechGridBackground({ variant = 'grayOrange' }: TechGridB
           setCanvasError(error.message || 'Unknown Canvas error');
         }}
       >
-        <ambientLight intensity={0.6} />
+            <ambientLight intensity={1.0} />
+            <pointLight position={[10, 10, 10]} intensity={0.5} />
         <DataNodes variant={variant} />
         <Connections variant={variant} />
       </Canvas>
