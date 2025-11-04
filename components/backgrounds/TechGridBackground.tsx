@@ -10,10 +10,10 @@ import * as THREE from 'three';
 const colorPalettes = {
   // Option 1: Dark gray with orange accents (visible, professional)
   grayOrange: [
-    [0.3, 0.3, 0.3],    // Medium gray (85%) - visible but subtle
-    [0.5, 0.5, 0.5],    // Light gray (10%) - more visible
+    [0.5, 0.5, 0.5],    // Light gray (70%) - clearly visible
+    [0.7, 0.7, 0.7],    // Bright gray (25%) - very visible
     [1.0, 0.53, 0.0],   // Bright orange (4%) - brand accent
-    [0.85, 0.45, 0.0],  // Dark orange (1%) - deeper accent
+    [1.0, 0.7, 0.3],    // Light orange (1%) - highlight
   ],
   
   // Option 2: Blue-gray with orange accents (tech, modern)
@@ -67,38 +67,39 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     }
   }, []);
 
-  // Generate grid of points with colors
-  const { positions, colors } = useMemo(() => {
-    try {
-      const positionsArray = new Float32Array(2000 * 3);
-      const colorsArray = new Float32Array(2000 * 3);
+    // Generate grid of points with colors - more points for visibility
+    const { positions, colors } = useMemo(() => {
+      try {
+      const numPoints = 3000; // Increased from 2000
+      const positionsArray = new Float32Array(numPoints * 3);
+      const colorsArray = new Float32Array(numPoints * 3);
       
       const colorPalette = colorPalettes[variant];
       
-      for (let i = 0; i < 2000; i++) {
+      for (let i = 0; i < numPoints; i++) {
         const x = (Math.random() - 0.5) * 50;
         const y = (Math.random() - 0.5) * 50;
         const z = (Math.random() - 0.5) * 50;
         
         positionsArray.set([x, y, z], i * 3);
         
-        // Assign colors based on probability
-        const rand = Math.random();
-        let color;
-        if (rand < 0.85) {
-          color = colorPalette[0]; // 85% base color
-        } else if (rand < 0.95) {
-          color = colorPalette[1]; // 10% secondary color
-        } else if (rand < 0.99) {
-          color = colorPalette[2]; // 4% accent color
-        } else {
-          color = colorPalette[3]; // 1% highlight color
-        }
+      // Assign colors based on probability - more visible colors
+      const rand = Math.random();
+      let color;
+      if (rand < 0.70) {
+        color = colorPalette[0]; // 70% base color - light gray
+      } else if (rand < 0.95) {
+        color = colorPalette[1]; // 25% secondary color - bright gray
+      } else if (rand < 0.99) {
+        color = colorPalette[2]; // 4% accent color - bright orange
+      } else {
+        color = colorPalette[3]; // 1% highlight color - light orange
+      }
         
         colorsArray.set(color, i * 3);
       }
       
-      console.log('[TechGridBackground] Generated', positionsArray.length / 3, 'points with colors');
+      console.log('[TechGridBackground] Generated', positionsArray.length / 3, 'points with colors. Points should be visible now!');
       return { positions: positionsArray, colors: colorsArray };
     } catch (err: any) {
       console.error('[TechGridBackground] Error generating points:', err);
@@ -168,10 +169,10 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
       <PointMaterial
         transparent
         vertexColors={true}
-        size={0.25}
+        size={0.4}
         sizeAttenuation={true}
         depthWrite={false}
-        opacity={0.8}
+        opacity={1.0}
         blending={THREE.AdditiveBlending}
       />
       </Points>
