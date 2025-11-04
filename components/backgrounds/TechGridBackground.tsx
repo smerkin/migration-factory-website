@@ -3,7 +3,6 @@
 
 import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
 // Color palette variants
@@ -50,7 +49,7 @@ const colorPalettes = {
 };
 
 function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPalettes }) {
-  const ref = useRef<THREE.Points>(null);
+  const ref = useRef<THREE.Group>(null);
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
@@ -99,30 +98,23 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     }
   }, [variant]);
 
-  // Animate rotation and movement - more visible animation
+  // Animate rotation and movement - rotate the group
   useFrame((state) => {
     try {
       if (ref.current) {
         const time = state.clock.getElapsedTime();
-        // More visible rotation - faster
+        // Rotate the entire group
         ref.current.rotation.x = time * 0.1;
         ref.current.rotation.y = time * 0.15;
         ref.current.rotation.z = time * 0.05;
         
-        // More visible floating movement
+        // Floating movement
         ref.current.position.y = Math.sin(time * 0.5) * 3;
         ref.current.position.x = Math.cos(time * 0.4) * 2.5;
         
-        // Log animation every 2 seconds for debugging
         if (Math.floor(time) % 2 === 0 && Math.floor(time * 10) % 20 === 0) {
-          console.log('[TechGridBackground] Animation running, time:', time.toFixed(2), 'rotation:', {
-            x: ref.current.rotation.x.toFixed(2),
-            y: ref.current.rotation.y.toFixed(2),
-            z: ref.current.rotation.z.toFixed(2)
-          });
+          console.log('[TechGridBackground] Animation running, time:', time.toFixed(2), 'points:', pointMeshes.length);
         }
-      } else {
-        console.warn('[TechGridBackground] useFrame: ref.current is null');
       }
     } catch (err: any) {
       console.error('[TechGridBackground] Animation error:', err);
@@ -148,26 +140,45 @@ function DataNodes({ variant = 'grayOrange' }: { variant?: keyof typeof colorPal
     console.error('[TechGridBackground] Rendering error display:', error);
   }
 
+  // Create mesh instances for each point - render as spheres
+  const pointMeshes = useMemo(() => {
+    const meshes = [];
+    const numPoints = Math.min(positions.length / 3, 300); // Limit to 300 for performance
+    for (let i = 0; i < numPoints; i++) {
+      const x = positions[i * 3];
+      const y = positions[i * 3 + 1];
+      const z = positions[i * 3 + 2];
+      const r = colors[i * 3];
+      const g = colors[i * 3 + 1];
+      const b = colors[i * 3 + 2];
+      meshes.push({ position: [x, y, z], color: [r, g, b] });
+    }
+    console.log('[TechGridBackground] Created', meshes.length, 'point meshes');
+    return meshes;
+  }, [positions, colors]);
+
   return (
-    <>
+    <group ref={ref}>
       {error && (
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshBasicMaterial color="red" />
         </mesh>
       )}
-      <Points ref={ref} geometry={geometry} frustumCulled={false}>
-        <PointMaterial
-          transparent={false}
-          vertexColors={true}
-          size={3.0}
-          sizeAttenuation={false}
-          depthWrite={false}
-          opacity={1.0}
-          blending={THREE.AdditiveBlending}
-        />
-      </Points>
-    </>
+      {/* Render points as WHITE spheres for maximum visibility */}
+      {pointMeshes.map((point, i) => (
+        <mesh
+          key={i}
+          position={[point.position[0], point.position[1], point.position[2]]}
+        >
+          <sphereGeometry args={[0.2, 8, 8]} />
+          <meshBasicMaterial
+            color="#FFFFFF"
+            transparent={false}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
